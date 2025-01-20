@@ -12,4 +12,28 @@ function agregarAmigo(){
     alert('Por favor, inserte un nombre');
   }
   document.querySelector('#amigo').value = '';
+  actualizarListado();
+}
+
+
+function actualizarListado(){
+  let lista = document.querySelector('#listaAmigos');
+  lista.innerHTML = '';
+  
+  amigos.forEach( amigo=>{
+    let li = document.createElement('li');
+    li.innerText = amigo;
+    lista.appendChild(li);
+  });
+}
+
+function sortearAmigo(){
+  let lista = document.querySelector('#listaAmigos');
+
+  if(amigos.length){
+    let random = Math.floor(Math.random()*amigos.length)+1;
+
+  }else{
+    lista.innerText = 'No hay amigos que sortear :(';
+  }
 }
