@@ -1,9 +1,14 @@
 package com.LiterAtura.Challenge;
 
+import com.LiterAtura.Challenge.models.RLibro;
+import com.LiterAtura.Challenge.models.RRespuestaApi;
 import com.LiterAtura.Challenge.services.APIConnection;
+import com.LiterAtura.Challenge.services.TransformJsonToClass;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.List;
 
 @SpringBootApplication
 public class ChallengeApplication implements CommandLineRunner {
@@ -16,6 +21,10 @@ public class ChallengeApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		APIConnection apiConnection = new APIConnection();
 		var json= apiConnection.connect("https://gutendex.com/books/?search=sherlock");
-		System.out.println(json);
+		//System.out.println(json);
+
+		TransformJsonToClass transformJsonToClass = new TransformJsonToClass();
+		RRespuestaApi respuesta = transformJsonToClass.transformar(json, RRespuestaApi.class);
+		respuesta.libros().forEach(System.out::println);
 	}
 }
