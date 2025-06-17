@@ -1,5 +1,6 @@
 package com.LiterAtura.Challenge;
 
+import com.LiterAtura.Challenge.main.Menu;
 import com.LiterAtura.Challenge.models.RLibro;
 import com.LiterAtura.Challenge.models.RRespuestaApi;
 import com.LiterAtura.Challenge.services.APIConnection;
@@ -19,12 +20,7 @@ public class ChallengeApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		APIConnection apiConnection = new APIConnection();
-		var json= apiConnection.connect("https://gutendex.com/books/?search=sherlock");
-		//System.out.println(json);
-
-		TransformJsonToClass transformJsonToClass = new TransformJsonToClass();
-		RRespuestaApi respuesta = transformJsonToClass.transformar(json, RRespuestaApi.class);
-		respuesta.libros().forEach(System.out::println);
+		Menu menu = new Menu();
+		menu.run();
 	}
 }
