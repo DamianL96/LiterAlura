@@ -1,11 +1,14 @@
 package com.LiterAtura.Challenge.main;
 
+import com.LiterAtura.Challenge.models.Libro;
 import com.LiterAtura.Challenge.models.RLibro;
 import com.LiterAtura.Challenge.models.RRespuestaApi;
 import com.LiterAtura.Challenge.services.APIConnection;
 import com.LiterAtura.Challenge.services.TransformJsonToClass;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -15,6 +18,8 @@ public class Menu {
   private TransformJsonToClass transformJsonToClass = new TransformJsonToClass();
   private RRespuestaApi respuestaApi;
   private String json;
+
+  private List<Libro> librosBuscados = new ArrayList<>();
 
   public void run(){
 
@@ -72,18 +77,22 @@ public class Menu {
   }
 
   private void buscarLibroXTitulo(){
-    System.out.println("INgresar nombre del libro:");
+    System.out.println("Ingresar nombre del libro:");
     var titulo = teclado.nextLine();
 
     System.out.println("Buscando...");
     json = apiConnection.connect("https://gutendex.com/books/?search="+titulo.replace(" ","%20"));
+
     respuestaApi = transformJsonToClass.transformar(json, RRespuestaApi.class);
     RLibro libroBuscado= respuestaApi.libros().getFirst();
-    System.out.println(libroBuscado.toString());
+    System.out.println(libroBuscado);
+
+    librosBuscados.add(new Libro(libroBuscado));
     System.out.println("Operacion finalizada.");
   }
 
   private void mostrarLibros(){
+    librosBuscados.forEach(System.out::println);
   }
 
 }
