@@ -1,9 +1,11 @@
 package com.LiterAtura.Challenge.main;
 
+import com.LiterAtura.Challenge.models.RLibro;
 import com.LiterAtura.Challenge.models.RRespuestaApi;
 import com.LiterAtura.Challenge.services.APIConnection;
 import com.LiterAtura.Challenge.services.TransformJsonToClass;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Menu {
@@ -11,6 +13,7 @@ public class Menu {
   private Scanner teclado = new Scanner(System.in);
   private APIConnection apiConnection = new APIConnection();;
   private TransformJsonToClass transformJsonToClass = new TransformJsonToClass();
+  private RRespuestaApi respuestaApi;
   private String json;
 
   public void run(){
@@ -27,26 +30,33 @@ public class Menu {
 
       mostrarOpciones();
       System.out.println("Seleccione una opcion:");
+      try{
+        opcion = teclado.nextInt();
+        teclado.nextLine();
 
-      opcion = teclado.nextInt();
-      teclado.nextLine();
+        switch (opcion){
+          case 1:
+            buscarLibroXTitulo();
+            break;
 
-      switch (opcion){
-        case 1:
-          buscarLibros();
-          break;
+          case 2:
+            mostrarLibros();
+            break;
 
-        case 2:
-          mostrarLibros();
-          break;
+          case 0:
+            System.out.println("Cerrando la app...");
+            break;
 
-        case 0:
-          System.out.println("Cerrando la app...");
-          break;
+          default:
+            System.out.println("Opcion invalida");
+        }
 
-        default:
-          System.out.println("Opcion invalida");
+      }catch(InputMismatchException e){
+        System.out.println("Solo ingresar numeros.");
+        System.out.println("Cerrando la app...");
+        break;
       }
+
     }
 
   }
@@ -61,15 +71,19 @@ public class Menu {
     System.out.println(opciones);
   }
 
-  private void buscarLibros(){
+  private void buscarLibroXTitulo(){
+    System.out.println("INgresar nombre del libro:");
+    var titulo = teclado.nextLine();
+
     System.out.println("Buscando...");
-    json = apiConnection.connect("https://gutendex.com/books/?search=sherlock");
+    json = apiConnection.connect("https://gutendex.com/books/?search="+titulo.replace(" ","%20"));
+    respuestaApi = transformJsonToClass.transformar(json, RRespuestaApi.class);
+    RLibro libroBuscado= respuestaApi.libros().getFirst();
+    System.out.println(libroBuscado.toString());
     System.out.println("Operacion finalizada.");
   }
 
   private void mostrarLibros(){
-    RRespuestaApi respuesta = transformJsonToClass.transformar(json, RRespuestaApi.class);
-    respuesta.libros().forEach(System.out::println);
   }
 
 }
