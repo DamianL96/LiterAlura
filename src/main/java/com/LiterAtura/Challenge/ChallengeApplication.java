@@ -1,5 +1,6 @@
 package com.LiterAtura.Challenge;
 
+import com.LiterAtura.Challenge.services.APIConnection;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +14,8 @@ public class ChallengeApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println("Hola");
+		APIConnection apiConnection = new APIConnection();
+		var json= apiConnection.connect("https://gutendex.com/books/?search=sherlock");
+		System.out.println(json);
 	}
 }
