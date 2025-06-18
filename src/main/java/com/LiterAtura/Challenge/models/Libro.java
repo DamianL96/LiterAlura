@@ -1,14 +1,25 @@
 package com.LiterAtura.Challenge.models;
 
+import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.Objects;
 
+@Entity
+@Table(name="libros")
 public class Libro {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
   private String titulo;
-  private Autor autor;
   private String idiomas;
   private Integer descargas;
+
+  @ManyToOne
+  @JoinColumn(name="autor_id")
+  private Autor autor;
 
   public Libro(){}
 
