@@ -1,8 +1,6 @@
 package com.LiterAtura.Challenge.main;
 
-import com.LiterAtura.Challenge.models.Libro;
-import com.LiterAtura.Challenge.models.RLibro;
-import com.LiterAtura.Challenge.models.RRespuestaApi;
+import com.LiterAtura.Challenge.models.*;
 import com.LiterAtura.Challenge.services.APIConnection;
 import com.LiterAtura.Challenge.services.TransformJsonToClass;
 
@@ -48,6 +46,18 @@ public class Menu {
             mostrarLibros();
             break;
 
+          case 3:
+            filtrarPorIdioma();
+            break;
+
+          case 4:
+            listarAutores();
+            break;
+
+          case 5:
+            listarAutoresVivosxAnio();
+            break;
+
           case 0:
             System.out.println("Cerrando la app...");
             break;
@@ -70,6 +80,9 @@ public class Menu {
     var opciones = """
             1- Buscar libros
             2- Mostrar libros
+            3- Filtrar Por Idioma
+            4- Listar autores
+            5- Buscar autor por anio
             
             0- Salir
             """;
@@ -93,6 +106,38 @@ public class Menu {
 
   private void mostrarLibros(){
     librosBuscados.forEach(System.out::println);
+  }
+
+  private void filtrarPorIdioma(){
+    System.out.println("Ingresar idioma (en - es):");
+    var idioma = teclado.nextLine();
+
+    librosBuscados.stream()
+            .filter(l -> l.getIdiomas().equalsIgnoreCase(idioma))
+            .forEach(System.out::println);
+  }
+
+  private void listarAutores(){
+    List<String> autores = librosBuscados.stream()
+            .map(Libro::getAutor)
+            .map(Autor::getNombre)
+            .map(String::toUpperCase)
+            .distinct()
+            .toList();
+    autores.forEach(System.out::println);
+  }
+
+  private void listarAutoresVivosxAnio(){
+    System.out.println("Ingresar año:");
+    var anio = teclado.nextInt();
+
+    List<Autor> autoresVivos = librosBuscados.stream()
+            .map(Libro::getAutor)
+            .distinct()//aca?
+            .filter(a -> a.getNacimiento() <= anio && a.getMuerte() > anio)
+            .toList();
+
+    autoresVivos.forEach(System.out::println);
   }
 
 }

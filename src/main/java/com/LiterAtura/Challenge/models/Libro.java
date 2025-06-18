@@ -2,9 +2,11 @@ package com.LiterAtura.Challenge.models;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 
+import java.util.Objects;
+
 public class Libro {
   private String titulo;
-  private String autor;
+  private Autor autor;
   private String idiomas;
   private Integer descargas;
 
@@ -12,7 +14,7 @@ public class Libro {
 
   public Libro(RLibro record) {
     this.titulo = record.titulo();;
-    this.autor = String.valueOf(record.autores());
+    this.autor = new Autor(record.autores().getFirst());
     this.idiomas = record.idiomas().getFirst();
     this.descargas = record.descargas();
   }
@@ -31,7 +33,7 @@ public class Libro {
     return titulo;
   }
 
-  public String getAutor() {
+  public Autor getAutor() {
     return autor;
   }
 
@@ -41,5 +43,17 @@ public class Libro {
 
   public Integer getDescargas() {
     return descargas;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    Libro libro = (Libro) o;
+    return Objects.equals(titulo, libro.titulo) && Objects.equals(autor, libro.autor) && Objects.equals(idiomas, libro.idiomas) && Objects.equals(descargas, libro.descargas);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(titulo, autor, idiomas, descargas);
   }
 }
