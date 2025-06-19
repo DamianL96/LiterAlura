@@ -1,11 +1,25 @@
 package com.LiterAtura.Challenge.models;
 
+import jakarta.persistence.*;
+import org.springframework.data.repository.cdi.Eager;
+
+import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name="autores")
 public class Autor {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
   private String nombre;
   private Integer nacimiento;
   private Integer muerte;
+
+  @OneToMany(mappedBy = "autor")
+  private List<Libro> libros;
 
   public Autor(){}
 
