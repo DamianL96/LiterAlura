@@ -72,6 +72,10 @@ public class Menu {
             autorXNombre();
             break;
 
+          case 7:
+            cantidadLibrosXIdioma();
+            break;
+
           case 0:
             System.out.println("Cerrando la app...");
             break;
@@ -98,11 +102,14 @@ public class Menu {
             4- Listar autores
             5- Buscar autor por anio
             6- autor por nombre
+            7- libros por idioma
             
             0- Salir
             """;
     System.out.println(opciones);
   }
+
+
 
   private void buscarLibroXTitulo(){
     System.out.println("Ingresar nombre del libro:");
@@ -182,4 +189,45 @@ public class Menu {
     autoresVivos.forEach(System.out::println);
   }
 
+  private void mostrarIdiomas(){
+    var idiomas= """
+            1- ingles
+            2- español
+            3- frances
+            """;
+    System.out.println(idiomas);
+  }
+
+  private void cantidadLibrosXIdioma(){
+    mostrarIdiomas();
+    System.out.println("Seleccionar idioma (ingresar numero): ");
+    var idiomaElegido = teclado.nextInt();
+    teclado.nextLine();
+
+    switch (idiomaElegido){
+      case 1:
+        buscarLibrosXIdioma("en");
+        break;
+
+      case 2:
+        buscarLibrosXIdioma("es");
+        break;
+
+      case 3:
+        buscarLibrosXIdioma("fr");
+        break;
+
+      default:
+        System.out.println("Idioma no encontrado");
+        break;
+    }
+  }
+
+  private void buscarLibrosXIdioma(String idioma){
+    List<Libro> libros = libroRepositorio.findByIdiomas(idioma);
+    libros.forEach(System.out::println);
+  }
+
 }
+
+
