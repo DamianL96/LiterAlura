@@ -3,4 +3,4 @@ En este programa podes
 - buscar libros y autores en la base de datos
 - ver estadisticas por idiomas
 - ver autores vivos en un determinado año
-- 
+  ![portada del programa LiterAlura(biblioteca virtual)]()
