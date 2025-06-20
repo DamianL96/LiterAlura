@@ -1,13 +1,13 @@
 package com.LiterAtura.Challenge.main;
 
 import com.LiterAtura.Challenge.models.*;
+import com.LiterAtura.Challenge.repository.AutorRepository;
+import com.LiterAtura.Challenge.repository.LibroRepository;
 import com.LiterAtura.Challenge.services.APIConnection;
 import com.LiterAtura.Challenge.services.TransformJsonToClass;
+import org.springframework.dao.DataIntegrityViolationException;
 
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Menu {
 
@@ -18,6 +18,16 @@ public class Menu {
   private String json;
 
   private List<Libro> librosBuscados = new ArrayList<>();
+
+  private LibroRepository libroRepositorio;
+  private AutorRepository autorRepositorio;
+
+  private Optional<Autor> autorDB;
+
+  public Menu (LibroRepository libroRepository, AutorRepository autorRepository){
+    this.libroRepositorio = libroRepository;
+    this.autorRepositorio = autorRepository;
+  }
 
   public void run(){
 
@@ -58,6 +68,10 @@ public class Menu {
             listarAutoresVivosxAnio();
             break;
 
+          case 6:
+            autorXNombre();
+            break;
+
           case 0:
             System.out.println("Cerrando la app...");
             break;
@@ -83,6 +97,7 @@ public class Menu {
             3- Filtrar Por Idioma
             4- Listar autores
             5- Buscar autor por anio
+            6- autor por nombre
             
             0- Salir
             """;
@@ -99,8 +114,23 @@ public class Menu {
     respuestaApi = transformJsonToClass.transformar(json, RRespuestaApi.class);
     RLibro libroBuscado= respuestaApi.libros().getFirst();
     System.out.println(libroBuscado);
+    //librosBuscados.add(new Libro(libroBuscado));
 
-    librosBuscados.add(new Libro(libroBuscado));
+    Libro libro = new Libro(libroBuscado);
+
+    autorDB = autorRepositorio.findByNombreIgnoreCaseContaining(libro.getAutor().getNombre());//buscamos el autor en db
+
+    if(autorDB.isPresent()){        //si el autor existe, lo incorporamos al libro
+      libro.setAutor(autorDB.get());
+      System.out.println("-Autor Existente-");
+
+    }else {
+      autorRepositorio.save(libro.getAutor()); //si no lo agregamos a la db
+      System.out.println("-Autor Nuevo-");
+    }
+
+    libroRepositorio.save(libro); //por ultimo guardamos el autor
+
     System.out.println("Operacion finalizada.");
   }
 
@@ -115,6 +145,18 @@ public class Menu {
     librosBuscados.stream()
             .filter(l -> l.getIdiomas().equalsIgnoreCase(idioma))
             .forEach(System.out::println);
+  }
+
+  private void autorXNombre(){
+    System.out.println("Ingresar nombre de autor:");
+    var autor = teclado.nextLine();
+    autorDB = autorRepositorio.findByNombreIgnoreCaseContaining(autor);
+
+    if(autorDB.isPresent()){
+      System.out.println(autorDB);
+    }else {
+      System.out.println("No se encontro el autor");
+    }
   }
 
   private void listarAutores(){

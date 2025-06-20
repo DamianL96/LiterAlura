@@ -2,6 +2,7 @@ package com.LiterAtura.Challenge.models;
 
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import org.hibernate.annotations.Cascade;
 
 import java.util.Objects;
 
@@ -17,14 +18,20 @@ public class Libro {
   private String idiomas;
   private Integer descargas;
 
+
   @ManyToOne
-  @JoinColumn(name="autor_id")
+  //@JoinColumn(name="autor_id")
   private Autor autor;
 
   public Libro(){}
 
   public Libro(RLibro record) {
-    this.titulo = record.titulo();;
+
+    if(record.titulo().length() > 254){
+      this.titulo = record.titulo().substring(0,250);
+    }else {
+      this.titulo = record.titulo();
+    }
     this.autor = new Autor(record.autores().getFirst());
     this.idiomas = record.idiomas().getFirst();
     this.descargas = record.descargas();
@@ -54,6 +61,22 @@ public class Libro {
 
   public Integer getDescargas() {
     return descargas;
+  }
+
+  public void setAutor(Autor autor) {
+    this.autor = autor;
+  }
+
+  public void setDescargas(Integer descargas) {
+    this.descargas = descargas;
+  }
+
+  public void setIdiomas(String idiomas) {
+    this.idiomas = idiomas;
+  }
+
+  public void setTitulo(String titulo) {
+    this.titulo = titulo;
   }
 
   @Override

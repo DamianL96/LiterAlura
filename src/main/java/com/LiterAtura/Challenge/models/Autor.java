@@ -1,7 +1,8 @@
 package com.LiterAtura.Challenge.models;
 
 import jakarta.persistence.*;
-import org.springframework.data.repository.cdi.Eager;
+import org.hibernate.annotations.Cascade;
+
 
 import java.util.List;
 import java.util.Objects;
@@ -14,16 +15,18 @@ public class Autor {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(unique = true, nullable = false)
   private String nombre;
   private Integer nacimiento;
   private Integer muerte;
 
-  @OneToMany(mappedBy = "autor")
+  @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL) //el nombre del atributo Autor en Libro
   private List<Libro> libros;
 
   public Autor(){}
 
   public Autor(RAutor record){
+
     this.nombre = record.nombre();
     this.nacimiento = record.nacimiento();
     this.muerte = record.muerte();
