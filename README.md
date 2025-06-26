@@ -1,6 +1,12 @@
 En este programa podes 
-- buscar libros en API gutendex y guardarlos en una base de datos
-- buscar libros y autores en la base de datos
-- ver estadisticas por idiomas
-- ver autores vivos en un determinado año
+- Buscar libros en la API de gutendex y guardarlos en una base de datos PostrgeSQL
+- El Backend permite las siguientes operaciones con la Base de datos:
+  - Ver todods los libros guardados
+  - Filtrar los libros por idioma
+  - Ver todos los autores
+  - Buscar autores por fecha
+  - Buscar autor por nombre
+  - Ver estadisticas de descargas por idiomas
+  - Ver el Top 10 de libros mas descargados
+
   ![portada del programa LiterAlura(biblioteca virtual)](assets/bibliotecaEscher.jpeg)
