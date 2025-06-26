@@ -1,15 +1,26 @@
 package com.LiterAtura.Challenge.main;
 
+import com.LiterAtura.Challenge.dto.LibroDTO;
 import com.LiterAtura.Challenge.models.*;
 import com.LiterAtura.Challenge.repository.AutorRepository;
 import com.LiterAtura.Challenge.repository.LibroRepository;
 import com.LiterAtura.Challenge.services.APIConnection;
+import com.LiterAtura.Challenge.services.AutorService;
+import com.LiterAtura.Challenge.services.LibroService;
 import com.LiterAtura.Challenge.services.TransformJsonToClass;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class Menu {
+
+  @Autowired
+  private LibroService libroService;
+
+  @Autowired
+  private AutorService autorService;
 
   private Scanner teclado = new Scanner(System.in);
   private APIConnection apiConnection = new APIConnection();;
@@ -17,7 +28,7 @@ public class Menu {
   private RRespuestaApi respuestaApi;
   private String json;
 
-  private List<Libro> librosBuscados = new ArrayList<>();
+  private List<LibroDTO> librosBuscados = new ArrayList<>();
 
   private LibroRepository libroRepositorio;
   private AutorRepository autorRepositorio;
@@ -142,51 +153,32 @@ public class Menu {
   }
 
   private void mostrarLibros(){
-    librosBuscados.forEach(System.out::println);
+    libroService.devolverTodosLosLibros().forEach(System.out::println);
   }
 
   private void filtrarPorIdioma(){
     System.out.println("Ingresar idioma (en - es):");
     var idioma = teclado.nextLine();
 
-    librosBuscados.stream()
-            .filter(l -> l.getIdiomas().equalsIgnoreCase(idioma))
-            .forEach(System.out::println);
+    libroService.filtrarLibroPorIdioma(idioma).forEach(System.out::println);
   }
 
   private void autorXNombre(){
     System.out.println("Ingresar nombre de autor:");
     var autor = teclado.nextLine();
-    autorDB = autorRepositorio.findByNombreIgnoreCaseContaining(autor);
 
-    if(autorDB.isPresent()){
-      System.out.println(autorDB);
-    }else {
-      System.out.println("No se encontro el autor");
-    }
+    System.out.println(autorService.devolverAutorPorNombre(autor));;
   }
 
   private void listarAutores(){
-    List<String> autores = librosBuscados.stream()
-            .map(Libro::getAutor)
-            .map(Autor::getNombre)
-            .map(String::toUpperCase)
-            .distinct()
-            .toList();
-    autores.forEach(System.out::println);
+    autorService.devolverTodosLosAutores().forEach(System.out::println);
   }
 
   private void listarAutoresVivosxAnio(){
     System.out.println("Ingresar año:");
     var anio = teclado.nextInt();
 
-    List<Autor> autoresVivos = librosBuscados.stream()
-            .map(Libro::getAutor)
-            .distinct()//aca?
-            .filter(a -> a.getNacimiento() <= anio && a.getMuerte() > anio)
-            .toList();
-
-    autoresVivos.forEach(System.out::println);
+    autorService.devolverAutorPorAnio(anio).forEach(System.out::println);
   }
 
   private void mostrarIdiomas(){
@@ -224,8 +216,15 @@ public class Menu {
   }
 
   private void buscarLibrosXIdioma(String idioma){
-    List<Libro> libros = libroRepositorio.findByIdiomas(idioma);
-    libros.forEach(System.out::println);
+    System.out.println("Total de libros en ("+idioma+") : " +libroService.devolverCantidadDeLibrosPorIdioma(idioma));
+    estadisticasLibrosPorIdiomas(idioma);
+  }
+
+  private void estadisticasLibrosPorIdiomas(String idioma){
+    DoubleSummaryStatistics est= libroService.estadisticasDeIdioma(idioma);
+    System.out.println("Media de descargas por libro: "+est.getAverage());
+    System.out.println("Mayor cantidad de descargas por libro: "+est.getMax());
+    System.out.println("Menor cantidad de descargas por libro: "+est.getMin());
   }
 
 }

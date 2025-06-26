@@ -18,10 +18,7 @@ import java.util.List;
 public class ChallengeApplication implements CommandLineRunner {
 
 	@Autowired
-	private LibroRepository libroRepository;
-
-	@Autowired
-	private AutorRepository autorRepository;
+	private Menu menu;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ChallengeApplication.class, args);
@@ -29,7 +26,6 @@ public class ChallengeApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Menu menu = new Menu(libroRepository, autorRepository);
 		menu.run();
 	}
 }
