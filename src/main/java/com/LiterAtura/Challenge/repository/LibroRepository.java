@@ -13,4 +13,7 @@ public interface LibroRepository extends JpaRepository<Libro, Long> {
   List<Libro> findAll();
 
   Long countByIdiomas(String idioma);
+
+  @Query("SELECT l FROM Libro l ORDER BY l.descargas DESC LIMIT 10")
+  List<Libro> top10MasDescargados();
 }

@@ -50,4 +50,17 @@ public class AutorService {
     }
     return null;
   }
+
+  public void guardarAutorEnDB(Autor autor){
+    autorRepository.save(autor);
+  }
+
+  public Autor autorExistenteEnDB(String nombre){
+    Optional<Autor> autorDB = autorRepository.findByNombreIgnoreCaseContaining(nombre); //Buscamos al autor
+
+    if(autorDB.isPresent()){ //si existe lo devolvemos
+      return autorDB.get();
+    }
+    return null;
+  }
 }

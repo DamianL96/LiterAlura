@@ -1,9 +1,6 @@
 package com.LiterAtura.Challenge.main;
 
-import com.LiterAtura.Challenge.dto.LibroDTO;
 import com.LiterAtura.Challenge.models.*;
-import com.LiterAtura.Challenge.repository.AutorRepository;
-import com.LiterAtura.Challenge.repository.LibroRepository;
 import com.LiterAtura.Challenge.services.APIConnection;
 import com.LiterAtura.Challenge.services.AutorService;
 import com.LiterAtura.Challenge.services.LibroService;
@@ -28,23 +25,15 @@ public class Menu {
   private RRespuestaApi respuestaApi;
   private String json;
 
-  private List<LibroDTO> librosBuscados = new ArrayList<>();
-
-  private LibroRepository libroRepositorio;
-  private AutorRepository autorRepositorio;
-
   private Optional<Autor> autorDB;
 
-  public Menu (LibroRepository libroRepository, AutorRepository autorRepository){
-    this.libroRepositorio = libroRepository;
-    this.autorRepositorio = autorRepository;
+  public Menu (LibroService libroService, AutorService autorService){
+    this.libroService = libroService;
+    this.autorService = autorService;
   }
 
   public void run(){
-
     cicloOpciones();
-
-
   }
 
   private void cicloOpciones(){
@@ -87,6 +76,10 @@ public class Menu {
             cantidadLibrosXIdioma();
             break;
 
+          case 8:
+            top10LibrosMasDescargados();
+            break;
+
           case 0:
             System.out.println("Cerrando la app...");
             break;
@@ -107,13 +100,14 @@ public class Menu {
 
   private void mostrarOpciones(){
     var opciones = """
-            1- Buscar libros
+            1- Buscar libro en API
             2- Mostrar libros
             3- Filtrar Por Idioma
             4- Listar autores
             5- Buscar autor por anio
-            6- autor por nombre
-            7- libros por idioma
+            6- Buscar autor por nombre
+            7- Estadisticas de descargas por idioma
+            8- Top 10 Libros mas descargados
             
             0- Salir
             """;
@@ -125,31 +119,20 @@ public class Menu {
   private void buscarLibroXTitulo(){
     System.out.println("Ingresar nombre del libro:");
     var titulo = teclado.nextLine();
-
     System.out.println("Buscando...");
+
     json = apiConnection.connect("https://gutendex.com/books/?search="+titulo.replace(" ","%20"));
-
     respuestaApi = transformJsonToClass.transformar(json, RRespuestaApi.class);
-    RLibro libroBuscado= respuestaApi.libros().getFirst();
-    System.out.println(libroBuscado);
-    //librosBuscados.add(new Libro(libroBuscado));
 
-    Libro libro = new Libro(libroBuscado);
+    try{
+      RLibro libroBuscado= respuestaApi.libros().getFirst();
+      System.out.println(libroBuscado);
+      Libro libro = new Libro(libroBuscado);
+      libroService.guardarLibro(libro);
 
-    autorDB = autorRepositorio.findByNombreIgnoreCaseContaining(libro.getAutor().getNombre());//buscamos el autor en db
-
-    if(autorDB.isPresent()){        //si el autor existe, lo incorporamos al libro
-      libro.setAutor(autorDB.get());
-      System.out.println("-Autor Existente-");
-
-    }else {
-      autorRepositorio.save(libro.getAutor()); //si no lo agregamos a la db
-      System.out.println("-Autor Nuevo-");
+    }catch (NoSuchElementException e){
+      System.out.println("\n -Ups... Parece que ese libro no se encuentra en la API... \n");
     }
-
-    libroRepositorio.save(libro); //por ultimo guardamos el autor
-
-    System.out.println("Operacion finalizada.");
   }
 
   private void mostrarLibros(){
@@ -166,7 +149,6 @@ public class Menu {
   private void autorXNombre(){
     System.out.println("Ingresar nombre de autor:");
     var autor = teclado.nextLine();
-
     System.out.println(autorService.devolverAutorPorNombre(autor));;
   }
 
@@ -177,7 +159,6 @@ public class Menu {
   private void listarAutoresVivosxAnio(){
     System.out.println("Ingresar año:");
     var anio = teclado.nextInt();
-
     autorService.devolverAutorPorAnio(anio).forEach(System.out::println);
   }
 
@@ -225,6 +206,10 @@ public class Menu {
     System.out.println("Media de descargas por libro: "+est.getAverage());
     System.out.println("Mayor cantidad de descargas por libro: "+est.getMax());
     System.out.println("Menor cantidad de descargas por libro: "+est.getMin());
+  }
+
+  private void top10LibrosMasDescargados(){
+    libroService.top10Descargas().forEach(System.out::println);
   }
 
 }
