@@ -126,9 +126,9 @@ public class Menu {
 
     try{
       RLibro libroBuscado= respuestaApi.libros().getFirst();
-      System.out.println(libroBuscado);
       Libro libro = new Libro(libroBuscado);
       libroService.guardarLibro(libro);
+      System.out.println(libroBuscado);
 
     }catch (NoSuchElementException e){
       System.out.println("\n -Ups... Parece que ese libro no se encuentra en la API... \n");
@@ -140,7 +140,7 @@ public class Menu {
   }
 
   private void filtrarPorIdioma(){
-    System.out.println("Ingresar idioma (en - es):");
+    System.out.println("Ingresar idioma (en - es - nl):");
     var idioma = teclado.nextLine();
 
     libroService.filtrarLibroPorIdioma(idioma).forEach(System.out::println);
@@ -166,7 +166,7 @@ public class Menu {
     var idiomas= """
             1- ingles
             2- español
-            3- frances
+            3- neerlandes
             """;
     System.out.println(idiomas);
   }
@@ -187,7 +187,7 @@ public class Menu {
         break;
 
       case 3:
-        buscarLibrosXIdioma("fr");
+        buscarLibrosXIdioma("nl");
         break;
 
       default:
